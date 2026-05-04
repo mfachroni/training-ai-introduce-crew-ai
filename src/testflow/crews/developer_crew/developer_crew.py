@@ -4,31 +4,10 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 
 @CrewBase
 class DeveloperCrew():
-    """DeveloperCrew crew for PRD generation"""
+    """DeveloperCrew crew for generating detailed technical documents"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
-
-    @agent
-    def product_manager(self) -> Agent:
-        return Agent(
-            config=self.agents_config['product_manager'], # type: ignore[index]
-            verbose=True
-        )
-
-    @agent
-    def ux_designer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['ux_designer'], # type: ignore[index]
-            verbose=True
-        )
-
-    @agent
-    def system_architect(self) -> Agent:
-        return Agent(
-            config=self.system_architect_config['system_architect'] if hasattr(self, 'system_architect_config') else self.agents_config['system_architect'], # type: ignore[index]
-            verbose=True
-        )
 
     @agent
     def system_architect(self) -> Agent:
@@ -37,29 +16,43 @@ class DeveloperCrew():
             verbose=True
         )
 
-    @task
-    def analysis_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['analysis_task'], # type: ignore[index]
+    @agent
+    def backend_developer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['backend_developer'], # type: ignore[index]
+            verbose=True
+        )
+
+    @agent
+    def frontend_developer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['frontend_developer'], # type: ignore[index]
+            verbose=True
         )
 
     @task
-    def ux_design_task(self) -> Task:
+    def architecture_task(self) -> Task:
         return Task(
-            config=self.tasks_config['ux_design_task'], # type: ignore[index]
+            config=self.tasks_config['architecture_task'], # type: ignore[index]
         )
 
     @task
-    def technical_spec_task(self) -> Task:
+    def api_spec_task(self) -> Task:
         return Task(
-            config=self.tasks_config['technical_spec_task'], # type: ignore[index]
+            config=self.tasks_config['api_spec_task'], # type: ignore[index]
         )
 
     @task
-    def prd_compilation_task(self) -> Task:
+    def frontend_plan_task(self) -> Task:
         return Task(
-            config=self.tasks_config['prd_compilation_task'], # type: ignore[index]
-            output_file='prd_document.md'
+            config=self.tasks_config['frontend_plan_task'], # type: ignore[index]
+        )
+
+    @task
+    def technical_doc_consolidation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['technical_doc_consolidation_task'], # type: ignore[index]
+            output_file='detailed_technical_doc.md'
         )
 
     @crew

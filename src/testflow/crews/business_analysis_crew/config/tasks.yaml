@@ -1,0 +1,19 @@
+elicitation_task:
+  description: >
+    Analyze the raw requirement: {requirement}
+    The target audience is: {target_audience}
+    Define the core objectives, key stakeholders, and high-level scope.
+  expected_output: >
+    A clarified requirement document in Bahasa Indonesia.
+  agent: requirement_collector
+  output_file: output/business_analysis_1_clarified_requirement.md
+
+prd_generation_task:
+  description: >
+    Based on the clarified requirements, generate a high-level Product Requirement Document (PRD).
+    Include Vision, Core Features, and Business Goals.
+    Use Bahasa Indonesia.
+  expected_output: >
+    A professional PRD document in Markdown format in Bahasa Indonesia.
+  agent: business_analyst
+  output_file: output/business_analysis_2_prd_document.md

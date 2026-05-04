@@ -2,6 +2,7 @@ from testflow.crews.content_crew.content_crew import ContentCrew
 from testflow.crews.marketanalisator.marketanalisator import Marketanalisator
 from testflow.crews.developer_crew.developer_crew import DeveloperCrew
 from testflow.crews.spec_detailer_crew.spec_detailer_crew import SpecDetailerCrew
+from testflow.crews.business_analysis_crew.business_analysis_crew import BusinessAnalysisCrew
 from uvicorn import logging
 from tasks.celery_app import celery_app
 import logging
@@ -40,13 +41,26 @@ def analyze_market(self, topic: str, year: str | None = None, location: str = "G
         logger.error(f"Error: {exc} \n {traceback.format_exc()}")
         raise
 
-@celery_app.task(bind=True, max_retries=3, name="generate_prd")
-def generate_prd(self, requirement: str, platform: str):
-    self.update_state(state="RUNNING", meta={"message": "Generating PRD document", "requirement" : requirement, "platform": platform})
+@celery_app.task(bind=True, max_retries=3, name="generate_technical_doc")
+def generate_technical_doc(self, prd_content: str, tech_stack: str):
+    self.update_state(state="RUNNING", meta={"message": "Generating detailed technical document", "prd_content_length" : len(prd_content), "tech_stack": tech_stack})
     try:
         result = DeveloperCrew().crew().kickoff(inputs={
+            "prd_content" : prd_content,
+            "tech_stack": tech_stack
+        })
+        return str(result)
+    except Exception as exc:
+        logger.error(f"Error: {exc} \n {traceback.format_exc()}")
+        raise
+
+@celery_app.task(bind=True, max_retries=3, name="gather_requirements")
+def gather_requirements(self, requirement: str, target_audience: str):
+    self.update_state(state="RUNNING", meta={"message": "Gathering requirements and business analysis", "requirement" : requirement, "target_audience": target_audience})
+    try:
+        result = BusinessAnalysisCrew().crew().kickoff(inputs={
             "requirement" : requirement,
-            "platform": platform
+            "target_audience": target_audience
         })
         return str(result)
     except Exception as exc:

@@ -24,6 +24,14 @@ class PRDInput(BaseModel):
 class DetailPRDInput(BaseModel):
     prd_content: str
 
+class TechnicalDocInput(BaseModel):
+    prd_content: str
+    tech_stack: str
+
+class RequirementInput(BaseModel):
+    requirement: str
+    target_audience: str
+
 class TaskStatus(BaseModel):
     task_id: str
     status: str
@@ -42,15 +50,20 @@ async def analyze_market(input : MarketAnalysisInput):
     task = celeryTask.analyze_market.delay(input.topic, input.year, input.location)
     return {"task_id": task.id}
 
-@app.post("/generate-prd")
-async def generate_prd(input : PRDInput):
-    task = celeryTask.generate_prd.delay(input.requirement, input.platform)
+@app.post("/generate-technical-doc")
+async def generate_technical_doc(input : TechnicalDocInput):
+    task = celeryTask.generate_technical_doc.delay(input.prd_content, input.tech_stack)
     return {"task_id": task.id}
 
-@app.post("/detail-prd")
-async def detail_prd(input : DetailPRDInput):
-    task = celeryTask.detail_prd.delay(input.prd_content)
+@app.post("/gather-requirements")
+async def gather_requirements(input : RequirementInput):
+    task = celeryTask.gather_requirements.delay(input.requirement, input.target_audience)
     return {"task_id": task.id}
+
+# @app.post("/detail-prd")
+# async def detail_prd(input : DetailPRDInput):
+#     task = celeryTask.detail_prd.delay(input.prd_content)
+#     return {"task_id": task.id}
     
 
 @app.get("/result/{task_id}")
