@@ -1,0 +1,36 @@
+analysis_task:
+  description: >
+    Analyze the following user requirement: {requirement}
+    The target platform is {platform}.
+    Define the product vision, target audience, and a detailed list of core features.
+  expected_output: >
+    A comprehensive product vision and a prioritized list of features with descriptions. in Bahasa Indonesia.
+  agent: product_manager
+  output_file: output/developer_analysis.md
+
+ux_design_task:
+  description: >
+    Based on the feature list provided by the Product Manager, design the user journey and UI requirements for {platform}.
+    Include details about navigation, key screens, and platform-specific UX considerations.
+  expected_output: >
+    A detailed UX specification including user flows and interface requirements for {platform}. in Bahasa Indonesia.
+  agent: ux_designer
+  output_file: output/developer_ux_design.md
+
+technical_spec_task:
+  description: >
+    Based on the features and UX design, define the technical architecture for the {platform} app.
+    Include data models, required third-party integrations, and a high-level API design.
+  expected_output: >
+    A technical specification document with architecture diagrams (described in text), data schemas, and API endpoints. in Bahasa Indonesia.
+  agent: system_architect
+  output_file: output/developer_technical_spec.md
+
+prd_compilation_task:
+  description: >
+    Consolidate all previous findings into a final Product Requirement Document (PRD).
+    Ensure the document is professional, consistent, and covers all aspects: Vision, Features, UX, and Technical Specs.
+  expected_output: >
+    A complete Product Requirement Document (PRD) in Markdown format in Bahasa Indonesia.
+  agent: product_manager
+  output_file: output/developer_prd.md

@@ -1,0 +1,39 @@
+user_story_task:
+  description: >
+    Review the following PRD content: {prd_content}
+    Break down each feature into detailed User Stories with Acceptance Criteria.
+    Use Bahasa Indonesia.
+  expected_output: >
+    A list of detailed User Stories with clear Acceptance Criteria for each feature.
+  agent: business_analyst
+  output_file: output/detailed_user_stories.md
+
+edge_case_task:
+  description: >
+    Based on the PRD and User Stories, identify all potential edge cases, error states, and security considerations.
+    Define how the system should handle these scenarios.
+    Use Bahasa Indonesia.
+  expected_output: >
+    A comprehensive report on edge cases and error handling strategies.
+  agent: qa_specialist
+  output_file: output/detailed_edge_cases.md
+
+technical_design_task:
+  description: >
+    Detail the system's technical design based on the PRD. 
+    Include detailed database schemas, field definitions, and logic for complex features.
+    Use Bahasa Indonesia.
+  expected_output: >
+    A detailed technical design document including data models and logic specifications.
+  agent: technical_architect
+  output_file: output/detailed_technical_design.md
+
+final_spec_task:
+  description: >
+    Consolidate the User Stories, Edge Cases, and Technical Design into one "Detailed Specification Document".
+    Ensure the document is consistent and professional.
+    Use Bahasa Indonesia.
+  expected_output: >
+    A comprehensive Detailed Specification Document in Markdown format.
+  agent: business_analyst
+  output_file: output/final_detailed_spec.md

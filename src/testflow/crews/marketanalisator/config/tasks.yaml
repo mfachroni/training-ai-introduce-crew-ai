@@ -1,0 +1,32 @@
+research_task:
+  description: >
+    Conduct a comprehensive market research on {topic} in {location}. 
+    Identify key market trends, consumer demographics, and major 
+    competitors as of {current_year}. Focus on gathering high-quality 
+    data that provides a clear picture of the current landscape.
+  expected_output: >
+    A detailed research summary of {topic} including top 5 trends, 
+    3 key consumer personas, and a list of primary competitors.
+  agent: market_researcher
+
+analysis_task:
+  description: >
+    Using the research provided, perform a deep-dive SWOT analysis 
+    of the main competitors in the {topic} market in {location}. Identify their 
+    market share, pricing strategies, and unique selling points. 
+    Find the 'white space' or untapped opportunities in the market.
+  expected_output: >
+    A comprehensive SWOT analysis report and a list of 3-5 
+    untapped market opportunities for {topic}.
+  agent: data_analyst
+
+strategy_task:
+  description: >
+    Synthesize the research and competitive analysis to create 
+    a strategic market entry or expansion plan for {topic} in {location}. 
+    Include specific recommendations for positioning, pricing, 
+    and marketing channels.
+  expected_output: >
+    A strategic roadmap document for {topic} with clear, 
+    actionable steps and projected outcomes.
+  agent: strategy_specialist
