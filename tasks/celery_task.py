@@ -1,3 +1,4 @@
+from testflow.crews.file_analyzer.file_analyzer import FileAnalyzer
 from testflow.crews.content_crew.content_crew import ContentCrew
 from testflow.crews.marketanalisator.marketanalisator import Marketanalisator
 from testflow.crews.developer_crew.developer_crew import DeveloperCrew
@@ -75,6 +76,22 @@ def detail_prd(self, prd_content: str):
             "prd_content" : prd_content
         })
         return str(result)
+    except Exception as exc:
+        logger.error(f"Error: {exc} \n {traceback.format_exc()}")
+        raise
+
+
+
+#============= Day 2 ====================
+
+@celery_app.task(bind=True, max_retries=3, name="file_text_analyzer")
+def file_text_analyzer(self, file: str):
+    self.update_state(state="RUNNING", meta={"message": "Analyzing file", "file": file})
+    try:
+        result = FileAnalyzer().crew().kickoff(inputs={
+            "file": file
+        })
+        return result.to_dict()
     except Exception as exc:
         logger.error(f"Error: {exc} \n {traceback.format_exc()}")
         raise

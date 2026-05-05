@@ -1,0 +1,8 @@
+file_analyzer_task:
+  description: >
+    Conduct a thorough analysis of the provided file at this path : {file}.
+    and make sure you identify every part from the document.
+    particulary related to sales figures.
+  expected_output: >
+    5 json insight full about sales report analyzed document.
+  agent: agent_file_analyzer

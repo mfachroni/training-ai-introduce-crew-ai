@@ -8,6 +8,10 @@ import tasks.celery_task as celeryTask
 from tasks.celery_app import celery_app
 from celery.result import AsyncResult
 
+TEXT_FOLDER = 'files/text/'
+
+os.makedirs(TEXT_FOLDER, exist_ok=True)
+
 class ResearchInput(BaseModel):
     topic: str
     language: str = "English"
@@ -35,7 +39,7 @@ class RequirementInput(BaseModel):
 class TaskStatus(BaseModel):
     task_id: str
     status: str
-    result: str | None
+    result: str | None | dict 
     error: str | None
 
 app = FastAPI()
@@ -66,18 +70,6 @@ async def gather_requirements(input : RequirementInput):
 #     return {"task_id": task.id}
     
 
-@app.get("/result/{task_id}")
-async def get_result(task_id: str):
-    task = celeryTask.research.AsyncResult(task_id)
-    if task.state == "PENDING":
-        return {"status": "PENDING"}
-    elif task.state == "STARTED":
-        return {"status": "STARTED", "result": task.info}
-    elif task.state == "SUCCESS":
-        return {"status": "SUCCESS", "result": task.info}
-    elif task.state == "FAILURE":
-        return {"status": "FAILURE", "result": str(task.info)}
-
 @app.get('/status/{task_id}', response_model=TaskStatus)
 async def get_status(task_id: str):
     task_result = AsyncResult(task_id, app=celery_app)
@@ -95,3 +87,26 @@ async def get_status(task_id: str):
         response['error'] = str(task_result.info)
 
     return response
+
+#========================= DAY 2 =============================
+
+@app.post("/text-analyzer")
+async def file_text_analyzer(file: UploadFile = File(...)):
+    if file.content_type != "text/plain":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+
+    file_extension = os.path.splitext(file.filename)[1]
+
+    if file_extension != ".txt":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+
+    unique_filename = str(uuid.uuid4()) + file_extension
+    file_loc = os.path.join(TEXT_FOLDER, unique_filename)
+
+    content = await file.read()
+
+    with open(file_loc, "wb") as f:
+        f.write(content)
+
+    task = celeryTask.file_text_analyzer.delay(file_loc)
+    return {"task_id": task.id, "file_location": file_loc, "content" : content}
