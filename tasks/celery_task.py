@@ -1,3 +1,5 @@
+from testflow.crews.prophet_crew.prophet_crew import ProphetCrew
+from testflow.crews.crewanomali.crewanomali import Crewanomali
 from testflow.crews.file_analyzer.file_analyzer import FileAnalyzer
 from testflow.crews.content_crew.content_crew import ContentCrew
 from testflow.crews.marketanalisator.marketanalisator import Marketanalisator
@@ -95,3 +97,27 @@ def file_text_analyzer(self, file: str):
     except Exception as exc:
         logger.error(f"Error: {exc} \n {traceback.format_exc()}")
         raise
+
+@celery_app.task(bind=True, max_retries=3, name="deteksi_anomali_excel")
+def deteksi_anomali_excel(self, file: str):
+    self.update_state(state="RUNNING", meta={"message": "Analyzing file", "file": file})
+    try:
+        result = Crewanomali().crew().kickoff(inputs={
+            "file": file
+        })
+        return str(result)
+    except Exception as exc:
+        logger.error(f"Error: {exc} \n {traceback.format_exc()}")
+
+@celery_app.task(bind=True, max_retries=3, name="forecasting_sales")
+def forecasting_sales(self, file: str):
+    self.update_state(state="RUNNING", meta={"message": "Performing time-series forecasting", "file": file})
+    try:
+        result = ProphetCrew().crew().kickoff(inputs={
+            "file_path": file
+        })
+        return str(result)
+    except Exception as exc:
+        logger.error(f"Error: {exc} \n {traceback.format_exc()}")
+        raise
+        

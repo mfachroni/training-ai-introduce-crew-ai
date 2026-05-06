@@ -1,54 +1,48 @@
-from pydantic import BaseModel
+from testflow.tools.tool_anomali import ToolAnomai
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from crewai_tools import FileReadTool, CSVSearchTool, JSONSearchTool
-from testflow.tools.excel_tool import ExcelAnalyzerTool
-
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
 
-class OutputTextAnalyzer(BaseModel):
-    insight: str
-    indicator: str
-    
-class SalesReport(BaseModel):
-    report : list[OutputTextAnalyzer]
-
 @CrewBase
-class FileAnalyzer():
-    """FileAnalyzer crew"""
+class Crewanomali():
+    """Crewanomali crew"""
 
-    agents_config = 'config/agents.yaml'
-    tasks_config = 'config/tasks.yaml'
+    agents: list[BaseAgent]
+    tasks: list[Task]
 
+    # Learn more about YAML configuration files here:
+    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
+    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+    agents_config = "config/agents.yaml"
+    tasks_config = "config/tasks.yaml"
+    
+    # If you would like to add tools to your agents, you can learn more about it here:
+    # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def agent_file_analyzer(self) -> Agent:
+    def agent_anomali_detection(self) -> Agent:
         return Agent(
-            config=self.agents_config['agent_file_analyzer'], # type: ignore[index]
+            config=self.agents_config['agent_anomali_detection'], # type: ignore[index]
             verbose=True,
-            tools=[
-                FileReadTool(), 
-                CSVSearchTool(), 
-                JSONSearchTool(), 
-                ExcelAnalyzerTool()
-            ],
+            tools = [ToolAnomai()]
         )
+
 
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
     @task
-    def file_analyzer_task(self) -> Task:
+    def task_anomali_detection(self) -> Task:
         return Task(
-            config=self.tasks_config['file_analyzer_task'], # type: ignore[index]
-            output_json = SalesReport
+            config=self.tasks_config['task_anomali_detection'], # type: ignore[index]
         )
 
+  
     @crew
     def crew(self) -> Crew:
-        """Creates the FileAnalyzer crew"""
+        """Creates the Crewanomali crew"""
         # To learn how to add knowledge sources to your crew, check out the documentation:
         # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 

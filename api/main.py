@@ -8,9 +8,8 @@ import tasks.celery_task as celeryTask
 from tasks.celery_app import celery_app
 from celery.result import AsyncResult
 
-TEXT_FOLDER = 'files/text/'
-
-os.makedirs(TEXT_FOLDER, exist_ok=True)
+UPLOAD_FOLDER = 'files/uploads/'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 class ResearchInput(BaseModel):
     topic: str
@@ -90,18 +89,19 @@ async def get_status(task_id: str):
 
 #========================= DAY 2 =============================
 
-@app.post("/text-analyzer")
-async def file_text_analyzer(file: UploadFile = File(...)):
-    if file.content_type != "text/plain":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+@app.post("/file-analyzer")
+async def file_analyzer(file: UploadFile = File(...)):
+    allowed_extensions = [".txt", ".csv", ".json", ".xlsx"]
+    file_extension = os.path.splitext(file.filename)[1].lower()
 
-    file_extension = os.path.splitext(file.filename)[1]
-
-    if file_extension != ".txt":
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file type")
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
+        )
 
     unique_filename = str(uuid.uuid4()) + file_extension
-    file_loc = os.path.join(TEXT_FOLDER, unique_filename)
+    file_loc = os.path.join(UPLOAD_FOLDER, unique_filename)
 
     content = await file.read()
 
@@ -109,4 +109,68 @@ async def file_text_analyzer(file: UploadFile = File(...)):
         f.write(content)
 
     task = celeryTask.file_text_analyzer.delay(file_loc)
-    return {"task_id": task.id, "file_location": file_loc, "content" : content}
+    
+    # Don't return binary content in response for xlsx
+    return {
+        "task_id": task.id, 
+        "file_location": file_loc, 
+        "filename": file.filename,
+        "type": file_extension
+    }
+
+@app.post("/anomali-detection")
+async def anomali_detection(file: UploadFile = File(...)):
+    allowed_extensions = [ ".xlsx"]
+    file_extension = os.path.splitext(file.filename)[1].lower()
+
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
+        )
+
+    unique_filename = str(uuid.uuid4()) + file_extension
+    file_loc = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+    content = await file.read()
+
+    with open(file_loc, "wb") as f:
+        f.write(content)
+
+    task = celeryTask.deteksi_anomali_excel.delay(file_loc)
+    
+    # Don't return binary content in response for xlsx
+    return {
+        "task_id": task.id, 
+        "file_location": file_loc, 
+        "filename": file.filename,
+        "type": file_extension
+    }
+
+@app.post("/forecasting-sales")
+async def forecasting_sales(file: UploadFile = File(...)):
+    allowed_extensions = [".xlsx"]
+    file_extension = os.path.splitext(file.filename)[1].lower()
+
+    if file_extension not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
+        )
+
+    unique_filename = str(uuid.uuid4()) + file_extension
+    file_loc = os.path.join(UPLOAD_FOLDER, unique_filename)
+
+    content = await file.read()
+
+    with open(file_loc, "wb") as f:
+        f.write(content)
+
+    task = celeryTask.forecasting_sales.delay(file_loc)
+    
+    return {
+        "task_id": task.id, 
+        "file_location": file_loc, 
+        "filename": file.filename,
+        "type": file_extension
+    }

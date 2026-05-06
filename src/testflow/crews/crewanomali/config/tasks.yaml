@@ -1,0 +1,8 @@
+task_anomali_detection:
+  description: >
+    You are responsible for analyzing the result of Tool deteksi anomali dari file excel at this path : {file} ,
+    if anomali is greater than total data / 2. show reminder that there is a problem with the data. otherwise, show just information.
+  expected_output: >
+    Reminder based on custom tool 'Tool Anomali'
+  agent: agent_anomali_detection
+

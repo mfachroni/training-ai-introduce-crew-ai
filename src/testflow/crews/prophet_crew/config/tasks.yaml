@@ -1,0 +1,9 @@
+forecasting_task:
+  description: >
+    Analyze the time-series data found in {file_path}. Use the Tool Prophet to 
+    generate a 30-day forecast for the target column. 
+    Interpret the results, identifying the overall trend and any significant patterns found.
+  expected_output: >
+    A detailed forecasting report including the predicted values for the next 30 days, 
+    trend direction analysis, and business recommendations based on the forecast.
+  agent: forecaster_agent
