@@ -7,14 +7,14 @@ import os
 
 class ToolProphetInput(BaseModel):
     file_path: str = Field(..., description="The path to the Excel file containing time-series data.")
-    target_column: str = Field("sales", description="The column name to predict.")
-    date_column: str = Field("date", description="The column name containing dates.")
     periods: int = Field(30, description="Number of days to forecast into the future.")
 
 class ToolProphet(BaseTool):
     name: str = "Tool Prophet"
     description: str = "A tool to perform time-series forecasting using Facebook Prophet. It reads an Excel file and returns the predicted trends."
     args_schema: Type[BaseModel] = ToolProphetInput
+    target_column: str = "sales"
+    date_column: str = "date"
     
     def _run(self, file_path: str, target_column: str = "sales", date_column: str = "date", periods: int = 30) -> str:
         try:
@@ -24,8 +24,17 @@ class ToolProphet(BaseTool):
             # Read Excel file
             df = pd.read_excel(file_path)
             
-            if date_column not in df.columns or target_column not in df.columns:
+            # Case-insensitive column matching
+            cols = {c.lower(): c for c in df.columns}
+            target_col_found = target_column if target_column in df.columns else cols.get(target_column.lower())
+            date_col_found = date_column if date_column in df.columns else cols.get(date_column.lower())
+
+            if not target_col_found or not date_col_found:
                 return f"Error: Columns '{date_column}' or '{target_column}' not found in file. Available columns: {list(df.columns)}"
+            
+            # Use the actual column names found
+            target_column = target_col_found
+            date_column = date_col_found
             
             # Prepare data for Prophet
             # Prophet requires 'ds' for date and 'y' for value

@@ -1,9 +1,24 @@
 forecasting_task:
   description: >
-    Analyze the time-series data found in {file_path}. Use the Tool Prophet to 
-    generate a 30-day forecast for the target column. 
-    Interpret the results, identifying the overall trend and any significant patterns found.
+    Conduct a comprehensive analysis of the time-series data from {file_path} using the Tool Prophet.
+    Your goal is to not just generate a 30-day forecast, but to deeply interpret the statistical 
+    outputs provided by the tool.
+    
+    Specifically, you must:
+    1. Evaluate the 'yhat' values to understand the central prediction.
+    2. Analyze the 'yhat_lower' and 'yhat_upper' bounds to assess the forecast's uncertainty and volatility.
+    3. Interpret the 'Overall Trend Direction' (e.g., UPWARD, DOWNWARD) and explain its 
+       implications for the business over the next month.
+    4. Identify any specific dates where the forecast suggests significant peaks, troughs, or shifts.
+    5. Contextualize the forecast within the historical context of the provided data.
   expected_output: >
-    A detailed forecasting report including the predicted values for the next 30 days, 
-    trend direction analysis, and business recommendations based on the forecast.
+    A professional forecasting analysis report in Markdown format including:
+    - **Executive Summary**: A high-level overview of the 30-day outlook.
+    - **Statistical Breakdown**: Analysis of predicted values (yhat) and the confidence 
+      interval (yhat_lower to yhat_upper), explaining the reliability of the forecast.
+    - **Trend Analysis**: A detailed explanation of the 'Overall Trend Direction' and 
+      what it means for future performance.
+    - **Critical Milestones**: Identification of specific dates with notable predicted changes.
+    - **Strategic Recommendations**: At least 3 actionable business strategies based 
+      directly on the forecasted trends and uncertainty levels.
   agent: forecaster_agent
